@@ -1,0 +1,4 @@
+name: IceBoatTimer
+version: '1.0-SNAPSHOT'
+main: cn.xor7.xiaohei.iceBoatTimer.IceBoatTimer
+api-version: '1.20'
