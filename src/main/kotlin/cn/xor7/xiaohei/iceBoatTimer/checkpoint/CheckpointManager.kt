@@ -14,6 +14,7 @@ object CheckpointManager {
     fun init(dataFolder: File) {
         dataFile = File(dataFolder, "checkpoints.json")
         load()
+        save()
     }
 
     fun addCheckpoint(cp: Checkpoint) {
@@ -25,6 +26,7 @@ object CheckpointManager {
             if (overlaps != null) throw IllegalArgumentException("将要添加的检查点与现有检查点重叠: ${cp.id} 与 ${overlaps.id} 重叠")
             existing.add(cp)
         }
+        save()
     }
 
     fun removeCheckpoint(id: String) {
@@ -34,6 +36,7 @@ object CheckpointManager {
             sectionMap[section]?.remove(toRemove)
             if (sectionMap[section]?.isEmpty() == true) sectionMap.remove(section)
         }
+        save()
     }
 
     fun getAll(): List<Checkpoint> = checkpoints.map { it.value }
@@ -45,6 +48,8 @@ object CheckpointManager {
     }
 
     fun save() {
+        dataFile.parentFile.mkdirs()
+        if (!dataFile.exists()) dataFile.createNewFile()
         dataFile.writeText(json.encodeToString(checkpoints))
     }
 
