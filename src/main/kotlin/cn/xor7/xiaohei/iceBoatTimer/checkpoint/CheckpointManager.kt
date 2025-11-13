@@ -1,4 +1,4 @@
-package cn.xor7.xiaohei.iceBoatTimer
+package cn.xor7.xiaohei.iceBoatTimer.checkpoint
 
 import kotlinx.serialization.encodeToString
 import kotlinx.serialization.json.Json
@@ -6,8 +6,8 @@ import org.bukkit.Location
 import java.io.File
 
 object CheckpointManager {
-    private val checkpoints = mutableListOf<Checkpoint>()
-    private val sectionMap = mutableMapOf<ChunkSection, MutableSet<Checkpoint>>() // 优化索引
+    private val checkpoints = mutableMapOf<String, Checkpoint>()
+    private val sectionMap = mutableMapOf<ChunkSection, MutableSet<Checkpoint>>()
     private val json = Json { prettyPrint = true }
     private lateinit var dataFile: File
 
@@ -17,22 +17,26 @@ object CheckpointManager {
     }
 
     fun addCheckpoint(cp: Checkpoint) {
-        checkpoints.add(cp)
+        if (checkpoints.containsKey(cp.id)) throw IllegalArgumentException("检查点ID已存在: ${cp.id}")
+        checkpoints[cp.id] = cp
         for (section in cp.coveredSections()) {
-            sectionMap.computeIfAbsent(section) { mutableSetOf() }.add(cp)
+            val existing = sectionMap.computeIfAbsent(section) { mutableSetOf() }
+            val overlaps = existing.firstOrNull { it.overlaps(cp) }
+            if (overlaps != null) throw IllegalArgumentException("将要添加的检查点与现有检查点重叠: ${cp.id} 与 ${overlaps.id} 重叠")
+            existing.add(cp)
         }
     }
 
     fun removeCheckpoint(id: String) {
-        val toRemove = checkpoints.find { it.id == id } ?: return
-        checkpoints.remove(toRemove)
+        val toRemove = checkpoints[id] ?: return
+        checkpoints.remove(id)
         for (section in toRemove.coveredSections()) {
             sectionMap[section]?.remove(toRemove)
             if (sectionMap[section]?.isEmpty() == true) sectionMap.remove(section)
         }
     }
 
-    fun getAll(): List<Checkpoint> = checkpoints.toList()
+    fun getAll(): List<Checkpoint> = checkpoints.map { it.value }
 
     fun findContaining(loc: Location): Checkpoint? {
         val section = ChunkSection(loc.world?.name ?: return null, loc.blockX shr 4, loc.blockZ shr 4)
@@ -49,8 +53,10 @@ object CheckpointManager {
         sectionMap.clear()
         if (dataFile.exists()) {
             val text = dataFile.readText()
-            checkpoints.addAll(json.decodeFromString<List<Checkpoint>>(text))
-            for (cp in checkpoints) {
+            json.decodeFromString<MutableList<Checkpoint>>(text).forEach {
+                checkpoints[it.id] = it
+            }
+            for (cp in checkpoints.values) {
                 for (section in cp.coveredSections()) {
                     sectionMap.computeIfAbsent(section) { mutableSetOf() }.add(cp)
                 }

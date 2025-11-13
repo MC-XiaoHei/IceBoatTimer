@@ -1,4 +1,4 @@
-package cn.xor7.xiaohei.iceBoatTimer
+package cn.xor7.xiaohei.iceBoatTimer.checkpoint
 
 data class ChunkSection(val world: String, val chunkX: Int, val chunkZ: Int) {
     override fun equals(other: Any?): Boolean {

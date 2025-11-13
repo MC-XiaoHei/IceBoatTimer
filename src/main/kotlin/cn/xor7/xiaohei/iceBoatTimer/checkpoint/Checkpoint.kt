@@ -1,4 +1,4 @@
-package cn.xor7.xiaohei.iceBoatTimer
+package cn.xor7.xiaohei.iceBoatTimer.checkpoint
 
 import kotlinx.serialization.Serializable
 import org.bukkit.Location
@@ -6,6 +6,7 @@ import org.bukkit.Location
 @Serializable
 data class Checkpoint(
     val id: String,
+    val num: Int,
     val world: String,
     val minX: Double,
     val minY: Double,
@@ -31,5 +32,12 @@ data class Checkpoint(
             }
         }
         return set
+    }
+
+    fun overlaps(other: Checkpoint): Boolean {
+        if (this.world != other.world) return false
+        return this.maxX >= other.minX && this.minX <= other.maxX &&
+                this.maxY >= other.minY && this.minY <= other.maxY &&
+                this.maxZ >= other.minZ && this.minZ <= other.maxZ
     }
 }

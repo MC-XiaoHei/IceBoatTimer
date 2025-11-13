@@ -1,7 +1,7 @@
 plugins {
     kotlin("jvm") version "2.2.21"
     kotlin("plugin.serialization") version "1.9.22"
-    id("com.gradleup.shadow") version "8.3.0"
+    id("com.gradleup.shadow") version "9.2.2"
     id("xyz.jpenilla.run-paper") version "2.3.1"
 }
 
@@ -15,21 +15,17 @@ repositories {
     }
 }
 
+@Suppress("VulnerableLibrariesLocal")
 dependencies {
     compileOnly("io.papermc.paper:paper-api:1.20.4-R0.1-SNAPSHOT")
     implementation("org.jetbrains.kotlinx:kotlinx-serialization-json:1.6.3")
     implementation("org.jetbrains.kotlin:kotlin-stdlib-jdk8")
-    compileOnly("dev.jorel:commandapi-paper-core:11.0.0")
-    implementation("dev.jorel:commandapi-kotlin-paper:11.0.0")
+    implementation("dev.jorel:commandapi-spigot-shade:11.0.0")
+    implementation("dev.jorel:commandapi-kotlin-spigot:11.0.0")
 }
 
-tasks {
-    runServer {
-        // Configure the Minecraft version for our task.
-        // This is the only required configuration besides applying the plugin.
-        // Your plugin's jar (or shadowJar if present) will be used automatically.
-        minecraftVersion("1.20")
-    }
+tasks.runServer {
+    minecraftVersion("1.20.4")
 }
 
 val targetJavaVersion = 17
@@ -48,4 +44,8 @@ tasks.processResources {
     filesMatching("paper-plugin.yml") {
         expand(props)
     }
+}
+
+tasks.shadowJar {
+    relocate("dev.jorel.commandapi", "cn.xor7.xiaohei.iceBoatTimer.libs.commandapi")
 }
