@@ -22,6 +22,7 @@ dependencies {
     implementation("org.jetbrains.kotlin:kotlin-stdlib-jdk8")
     implementation("dev.jorel:commandapi-spigot-shade:11.0.0")
     implementation("dev.jorel:commandapi-kotlin-spigot:11.0.0")
+    implementation("fr.mrmicky:fastboard:2.1.5")
 }
 
 tasks.runServer {

@@ -10,6 +10,8 @@ object CheckpointManager {
     private val sectionMap = mutableMapOf<ChunkSection, MutableSet<Checkpoint>>()
     private val json = Json { prettyPrint = true }
     private lateinit var dataFile: File
+    var maxCheckpoint: Int = 1
+        private set
 
     fun init(dataFolder: File) {
         dataFile = File(dataFolder, "checkpoints.json")
@@ -26,6 +28,7 @@ object CheckpointManager {
             if (overlaps != null) throw IllegalArgumentException("将要添加的检查点与现有检查点重叠: ${cp.id} 与 ${overlaps.id} 重叠")
             existing.add(cp)
         }
+        recalculateEndNum()
         save()
     }
 
@@ -36,6 +39,7 @@ object CheckpointManager {
             sectionMap[section]?.remove(toRemove)
             if (sectionMap[section]?.isEmpty() == true) sectionMap.remove(section)
         }
+        recalculateEndNum()
         save()
     }
 
@@ -58,14 +62,17 @@ object CheckpointManager {
         sectionMap.clear()
         if (dataFile.exists()) {
             val text = dataFile.readText()
-            json.decodeFromString<MutableList<Checkpoint>>(text).forEach {
-                checkpoints[it.id] = it
-            }
+            checkpoints += json.decodeFromString<Map<String, Checkpoint>>(text)
             for (cp in checkpoints.values) {
                 for (section in cp.coveredSections()) {
                     sectionMap.computeIfAbsent(section) { mutableSetOf() }.add(cp)
                 }
             }
         }
+        recalculateEndNum()
+    }
+
+    private fun recalculateEndNum() {
+        maxCheckpoint = checkpoints.values.maxOfOrNull { it.num } ?: 0
     }
 }

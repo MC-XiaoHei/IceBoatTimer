@@ -9,7 +9,7 @@ import java.util.*
 
 private val playerSelections = mutableMapOf<UUID, Pair<Location?, Location?>>()
 
-fun registerCheckpointEditCommand() = commandTree("checkpoint") {
+fun registerCheckpointCommand() = commandTree("checkpoint") {
     literalArgument("pos1") {
         playerExecutor { player, _ ->
             val pair = playerSelections[player.uniqueId] ?: (null to null)
