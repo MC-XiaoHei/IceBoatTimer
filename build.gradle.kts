@@ -10,9 +10,8 @@ version = "1.0-SNAPSHOT"
 
 repositories {
     mavenCentral()
-    maven("https://repo.papermc.io/repository/maven-public/") {
-        name = "papermc-repo"
-    }
+    maven("https://repo.papermc.io/repository/maven-public/")
+    maven("https://www.jitpack.io")
 }
 
 @Suppress("VulnerableLibrariesLocal")
@@ -22,6 +21,7 @@ dependencies {
     implementation("org.jetbrains.kotlin:kotlin-stdlib-jdk8")
     implementation("dev.jorel:commandapi-spigot-shade:11.0.0")
     implementation("dev.jorel:commandapi-kotlin-spigot:11.0.0")
+    implementation("com.github.602723113:ParticleLib:1.5.0")
     implementation("fr.mrmicky:fastboard:2.1.5")
 }
 
@@ -29,7 +29,7 @@ tasks.runServer {
     minecraftVersion("1.20.4")
 }
 
-val targetJavaVersion = 17
+val targetJavaVersion = 21
 kotlin {
     jvmToolchain(targetJavaVersion)
 }

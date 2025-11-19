@@ -5,12 +5,7 @@ import cn.xor7.xiaohei.iceBoatTimer.utils.plus
 import fr.mrmicky.fastboard.adventure.FastBoard
 import net.kyori.adventure.text.Component.text
 import net.kyori.adventure.text.TextComponent
-import net.kyori.adventure.text.format.NamedTextColor
-import net.kyori.adventure.text.format.NamedTextColor.BLUE
-import net.kyori.adventure.text.format.NamedTextColor.GOLD
-import net.kyori.adventure.text.format.NamedTextColor.GRAY
-import net.kyori.adventure.text.format.NamedTextColor.GREEN
-import net.kyori.adventure.text.format.NamedTextColor.RED
+import net.kyori.adventure.text.format.NamedTextColor.*
 import net.kyori.adventure.text.format.TextDecoration.BOLD
 import org.bukkit.event.EventHandler
 import org.bukkit.event.Listener
@@ -46,7 +41,7 @@ object ScoreboardManager : Listener {
             if (entry != null) {
                 this.updateLine(i - 1, buildRankPart(i) + buildPlayerPart(entry.playerId) + buildTimeDiffPart(entry.timeDiffMs))
             } else {
-                this.updateLine(i - 1, text(""))
+                this.updateLine(i - 1, text("".repeat(25)))
             }
         }
     }

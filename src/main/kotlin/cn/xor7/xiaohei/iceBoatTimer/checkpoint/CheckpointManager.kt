@@ -75,4 +75,16 @@ object CheckpointManager {
     private fun recalculateEndNum() {
         maxCheckpoint = checkpoints.values.maxOfOrNull { it.num } ?: 0
     }
+
+    fun turnOnParticles() {
+        for (cp in checkpoints.values) {
+            cp.turnOnParticles()
+        }
+    }
+
+    fun turnOffParticles() {
+        for (cp in checkpoints.values) {
+            cp.turnOffParticles()
+        }
+    }
 }
