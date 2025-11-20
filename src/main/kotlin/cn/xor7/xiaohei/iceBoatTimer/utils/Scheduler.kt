@@ -1,15 +1,17 @@
 package cn.xor7.xiaohei.iceBoatTimer.utils
 
 import cn.xor7.xiaohei.iceBoatTimer.instance
+import org.bukkit.scheduler.BukkitTask
 
 fun runTaskTimer(
     delayTicks: Long,
     periodTicks: Long,
-    task: () -> Unit,
+    task: BukkitTask.() -> Unit,
 ) {
-    instance.server.scheduler.runTaskTimer(
+    var bukkitTask: BukkitTask? = null
+    bukkitTask = instance.server.scheduler.runTaskTimer(
         instance,
-        Runnable { task() },
+        Runnable { bukkitTask?.task() },
         delayTicks,
         periodTicks,
     )

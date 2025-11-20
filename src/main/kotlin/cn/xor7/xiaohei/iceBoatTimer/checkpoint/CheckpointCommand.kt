@@ -46,44 +46,47 @@ fun registerCheckpointCommand() = commandTree("checkpoint") {
     literalArgument("add") {
         stringArgument("id") {
             integerArgument("num") {
-                playerExecutor { player, args ->
-                    val id: String by args
-                    val num: Int by args
-                    val (loc1, loc2) = playerSelections[player.uniqueId] ?: (null to null)
-                    if (loc1 == null || loc2 == null) {
-                        player.sendMessage(text("请先用 /checkpoint pos1 和 /checkpoint pos2 选点！", RED))
-                        return@playerExecutor
+                booleanArgument("isFinal", true) {
+                    playerExecutor { player, args ->
+                        val id: String by args
+                        val num: Int by args
+                        val isFinal: Boolean? by args
+                        val (loc1, loc2) = playerSelections[player.uniqueId] ?: (null to null)
+                        if (loc1 == null || loc2 == null) {
+                            player.sendMessage(text("请先用 /checkpoint pos1 和 /checkpoint pos2 选点！", RED))
+                            return@playerExecutor
+                        }
+                        if (loc1.world != loc2.world) {
+                            player.sendMessage(text("两个点必须在同一个世界！", RED))
+                            return@playerExecutor
+                        }
+                        val minX = minOf(loc1.x, loc2.x).toInt()
+                        val minY = minOf(loc1.y, loc2.y).toInt()
+                        val minZ = minOf(loc1.z, loc2.z).toInt()
+                        val maxX = maxOf(loc1.x, loc2.x).toInt()
+                        val maxY = maxOf(loc1.y, loc2.y).toInt()
+                        val maxZ = maxOf(loc1.z, loc2.z).toInt()
+                        val world = loc1.world?.name ?: run {
+                            player.sendMessage(text("世界名获取失败！", RED))
+                            return@playerExecutor
+                        }
+                        val cp = Checkpoint(id, num, world, minX, minY, minZ, maxX, maxY, maxZ, isFinal ?: false)
+                        try {
+                            CheckpointManager.addCheckpoint(cp)
+                        } catch (e: IllegalArgumentException) {
+                            player.sendMessage(text("添加检查点失败: ${e.message}", RED))
+                            return@playerExecutor
+                        }
+                        player.sendMessage(
+                            text(
+                                "检查点 $id 已添加. 区域: ",
+                                GREEN,
+                            ) + text(
+                                "($minX, $minY, $minZ) ~ ($maxX, $maxY, $maxZ)",
+                                YELLOW,
+                            ),
+                        )
                     }
-                    if (loc1.world != loc2.world) {
-                        player.sendMessage(text("两个点必须在同一个世界！", RED))
-                        return@playerExecutor
-                    }
-                    val minX = minOf(loc1.x, loc2.x).toInt()
-                    val minY = minOf(loc1.y, loc2.y).toInt()
-                    val minZ = minOf(loc1.z, loc2.z).toInt()
-                    val maxX = maxOf(loc1.x, loc2.x).toInt()
-                    val maxY = maxOf(loc1.y, loc2.y).toInt()
-                    val maxZ = maxOf(loc1.z, loc2.z).toInt()
-                    val world = loc1.world?.name ?: run {
-                        player.sendMessage(text("世界名获取失败！", RED))
-                        return@playerExecutor
-                    }
-                    val cp = Checkpoint(id, num, world, minX, minY, minZ, maxX, maxY, maxZ)
-                    try {
-                        CheckpointManager.addCheckpoint(cp)
-                    } catch (e: IllegalArgumentException) {
-                        player.sendMessage(text("添加检查点失败: ${e.message}", RED))
-                        return@playerExecutor
-                    }
-                    player.sendMessage(
-                        text(
-                            "检查点 $id 已添加. 区域: ",
-                            GREEN,
-                        ) + text(
-                            "($minX, $minY, $minZ) ~ ($maxX, $maxY, $maxZ)",
-                            YELLOW,
-                        ),
-                    )
                 }
             }
         }

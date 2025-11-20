@@ -16,7 +16,8 @@ data class Checkpoint(
     val minZ: Int,
     val maxX: Int,
     val maxY: Int,
-    val maxZ: Int
+    val maxZ: Int,
+    val isFinal: Boolean,
 ) {
     @Transient
     private val particle = run {

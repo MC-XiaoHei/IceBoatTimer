@@ -1,17 +1,17 @@
-package cn.xor7.xiaohei.iceBoatTimer
+package cn.xor7.xiaohei.iceBoatTimer.scoreboard
 
 import cn.xor7.xiaohei.iceBoatTimer.rank.RecordTimeManager
 import cn.xor7.xiaohei.iceBoatTimer.utils.plus
 import fr.mrmicky.fastboard.adventure.FastBoard
-import net.kyori.adventure.text.Component.text
+import net.kyori.adventure.text.Component
 import net.kyori.adventure.text.TextComponent
-import net.kyori.adventure.text.format.NamedTextColor.*
-import net.kyori.adventure.text.format.TextDecoration.BOLD
+import net.kyori.adventure.text.format.NamedTextColor
+import net.kyori.adventure.text.format.TextDecoration
 import org.bukkit.event.EventHandler
 import org.bukkit.event.Listener
 import org.bukkit.event.player.PlayerJoinEvent
 import org.bukkit.event.player.PlayerQuitEvent
-import java.util.*
+import java.util.UUID
 
 object ScoreboardManager : Listener {
     private val boards: MutableMap<UUID, FastBoard> = mutableMapOf()
@@ -20,7 +20,8 @@ object ScoreboardManager : Listener {
     fun onJoin(e: PlayerJoinEvent) {
         val player = e.getPlayer()
         this.boards[player.uniqueId] = FastBoard(player).apply {
-            updateTitle(text("> 山商MC煤炭社第二届冰船比赛 <", GOLD).decorate(BOLD))
+            updateTitle(
+                Component.text("> 山商MC煤炭社第二届冰船比赛 <", NamedTextColor.GOLD).decorate(TextDecoration.BOLD))
         }
     }
 
@@ -41,32 +42,32 @@ object ScoreboardManager : Listener {
             if (entry != null) {
                 this.updateLine(i - 1, buildRankPart(i) + buildPlayerPart(entry.playerId) + buildTimeDiffPart(entry.timeDiffMs))
             } else {
-                this.updateLine(i - 1, text("".repeat(25)))
+                this.updateLine(i - 1, Component.text("".repeat(25)))
             }
         }
     }
 
-    private fun buildRankPart(rank: Int) = text(
+    private fun buildRankPart(rank: Int) = Component.text(
         when (rank) {
             in 1..9 -> "$rank.  "
             else -> "$rank. "
         },
-        GRAY,
+        NamedTextColor.GRAY,
     )
 
-    private fun buildPlayerPart(name: String) = text(
+    private fun buildPlayerPart(name: String) = Component.text(
         name + " ".repeat(16 - name.length),
-        BLUE,
+        NamedTextColor.BLUE,
     )
 
     private fun buildTimeDiffPart(timeDiffMs: Long): TextComponent {
-        if (timeDiffMs == 0L) return text("0", GOLD)
+        if (timeDiffMs == 0L) return Component.text("0", NamedTextColor.GOLD)
         else if (timeDiffMs > 0L) {
             val seconds = timeDiffMs.toDouble() / 1000.0
-            return text("+%.3f".format(seconds), GREEN)
+            return Component.text("+%.3f".format(seconds), NamedTextColor.GREEN)
         } else {
             val seconds = -timeDiffMs.toDouble() / 1000.0
-            return text("-%.3f".format(seconds), RED)
+            return Component.text("-%.3f".format(seconds), NamedTextColor.RED)
         }
     }
 }

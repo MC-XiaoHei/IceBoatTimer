@@ -3,8 +3,11 @@ package cn.xor7.xiaohei.iceBoatTimer
 import cn.xor7.xiaohei.iceBoatTimer.checkpoint.CheckpointListener
 import cn.xor7.xiaohei.iceBoatTimer.checkpoint.CheckpointManager
 import cn.xor7.xiaohei.iceBoatTimer.checkpoint.registerCheckpointCommand
+import cn.xor7.xiaohei.iceBoatTimer.game.GameManager
+import cn.xor7.xiaohei.iceBoatTimer.game.registerGameCommand
 import cn.xor7.xiaohei.iceBoatTimer.rank.RecordTimeManager
 import cn.xor7.xiaohei.iceBoatTimer.rank.registerRecordTimeCommand
+import cn.xor7.xiaohei.iceBoatTimer.scoreboard.ScoreboardManager
 import cn.xor7.xiaohei.iceBoatTimer.utils.registerListener
 import cn.xor7.xiaohei.iceBoatTimer.utils.runTaskTimer
 import dev.jorel.commandapi.CommandAPI
@@ -25,8 +28,10 @@ class IceBoatTimer : JavaPlugin() {
         RecordTimeManager.init(dataFolder)
         registerCheckpointCommand()
         registerRecordTimeCommand()
+        registerGameCommand()
         registerListener(CheckpointListener)
         registerListener(ScoreboardManager)
+        registerListener(GameManager)
         runTaskTimer(0, 5) { ScoreboardManager.updateAllBoards() }
     }
 
