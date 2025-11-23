@@ -1,5 +1,6 @@
 package cn.xor7.xiaohei.iceBoatTimer.game
 
+import cn.xor7.xiaohei.iceBoatTimer.rank.RecordTimeManager
 import cn.xor7.xiaohei.iceBoatTimer.utils.runTaskTimer
 import dev.jorel.commandapi.kotlindsl.*
 import net.kyori.adventure.text.Component.text
@@ -8,27 +9,24 @@ import net.kyori.adventure.title.TitlePart.TITLE
 import org.bukkit.entity.Player
 
 fun registerGameCommand() = commandTree("game") {
-    literalArgument("prepare") {
-        stringArgument("player") {
-            anyExecutor { sender, args ->
-                val player: String by args
-
-            }
-        }
-    }
     literalArgument("start") {
         entitySelectorArgumentOnePlayer("player") {
             playerExecutor { _, args ->
                 val player: Player by args
                 var countdown = 10
+                player.teleport(player.respawnLocation ?: player.world.spawnLocation)
                 runTaskTimer(0, 20) {
                     if (countdown > 0) {
                         player.sendTitlePart(TITLE, text("$countdown", BLUE))
-                        countdown--
-                    } else {
+                    } else if (countdown == 0) {
                         player.sendTitlePart(TITLE, text("开始！", BLUE))
+                        GameManager.startedPlayers += player.name
+                        RecordTimeManager.resetPlayerStartTime(player.name)
+                    } else {
+                        player.sendTitlePart(TITLE, text(""))
                         cancel()
                     }
+                    countdown--
                 }
             }
         }

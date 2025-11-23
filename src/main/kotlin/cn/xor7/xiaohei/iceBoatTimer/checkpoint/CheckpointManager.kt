@@ -3,6 +3,7 @@ package cn.xor7.xiaohei.iceBoatTimer.checkpoint
 import kotlinx.serialization.encodeToString
 import kotlinx.serialization.json.Json
 import org.bukkit.Location
+import org.bukkit.entity.Player
 import java.io.File
 
 object CheckpointManager {
@@ -21,13 +22,13 @@ object CheckpointManager {
 
     fun addCheckpoint(cp: Checkpoint) {
         if (checkpoints.containsKey(cp.id)) throw IllegalArgumentException("检查点ID已存在: ${cp.id}")
-        checkpoints[cp.id] = cp
         for (section in cp.coveredSections()) {
             val existing = sectionMap.computeIfAbsent(section) { mutableSetOf() }
             val overlaps = existing.firstOrNull { it.overlaps(cp) }
             if (overlaps != null) throw IllegalArgumentException("将要添加的检查点与现有检查点重叠: ${cp.id} 与 ${overlaps.id} 重叠")
             existing.add(cp)
         }
+        checkpoints[cp.id] = cp
         recalculateEndNum()
         save()
     }

@@ -12,7 +12,7 @@ private val playerSelections = mutableMapOf<UUID, Pair<Location?, Location?>>()
 fun registerCheckpointCommand() = commandTree("checkpoint") {
     withPermission("iceboattimer.checkpoint.manage")
     literalArgument("pos1") {
-        aliases += "p1"
+        withAliases("p1")
         playerExecutor { player, _ ->
             val pair = playerSelections[player.uniqueId] ?: (null to null)
             playerSelections[player.uniqueId] = player.location to pair.second
@@ -28,7 +28,7 @@ fun registerCheckpointCommand() = commandTree("checkpoint") {
         }
     }
     literalArgument("pos2") {
-        aliases += "p2"
+        withAliases("p2")
         playerExecutor { player, _ ->
             val pair = playerSelections[player.uniqueId] ?: (null to null)
             playerSelections[player.uniqueId] = pair.first to player.location
@@ -92,13 +92,15 @@ fun registerCheckpointCommand() = commandTree("checkpoint") {
         }
     }
     literalArgument("remove") {
-        playerExecutor { player, args ->
-            val id = args.getUnchecked<String>("id") ?: run {
-                player.sendMessage(text("ID不能为空！", RED))
-                return@playerExecutor
+        stringArgument("id") {
+            playerExecutor { player, args ->
+                val id = args.getUnchecked<String>("id") ?: run {
+                    player.sendMessage(text("ID不能为空！", RED))
+                    return@playerExecutor
+                }
+                CheckpointManager.removeCheckpoint(id)
+                player.sendMessage(text("检查点 $id 已移除.", GREEN))
             }
-            CheckpointManager.removeCheckpoint(id)
-            player.sendMessage(text("检查点 $id 已移除.", GREEN))
         }
     }
     literalArgument("list") {

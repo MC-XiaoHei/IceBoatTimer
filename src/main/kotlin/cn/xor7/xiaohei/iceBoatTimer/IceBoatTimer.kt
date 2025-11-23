@@ -32,7 +32,7 @@ class IceBoatTimer : JavaPlugin() {
         registerListener(CheckpointListener)
         registerListener(ScoreboardManager)
         registerListener(GameManager)
-        runTaskTimer(0, 10) { ScoreboardManager.updateAllBoards() }
+        runTaskTimer(0, 1) { ScoreboardManager.updateAllBoards() }
     }
 
     override fun onDisable() {

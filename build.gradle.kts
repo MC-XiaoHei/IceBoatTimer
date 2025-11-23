@@ -17,11 +17,11 @@ repositories {
 @Suppress("VulnerableLibrariesLocal")
 dependencies {
     compileOnly("io.papermc.paper:paper-api:1.20.4-R0.1-SNAPSHOT")
+    compileOnly("com.github.602723113:ParticleLib:1.5.0")
     implementation("org.jetbrains.kotlinx:kotlinx-serialization-json:1.6.3")
     implementation("org.jetbrains.kotlin:kotlin-stdlib-jdk8")
     implementation("dev.jorel:commandapi-spigot-shade:11.0.0")
     implementation("dev.jorel:commandapi-kotlin-spigot:11.0.0")
-    implementation("com.github.602723113:ParticleLib:1.5.0")
     implementation("fr.mrmicky:fastboard:2.1.5")
 }
 

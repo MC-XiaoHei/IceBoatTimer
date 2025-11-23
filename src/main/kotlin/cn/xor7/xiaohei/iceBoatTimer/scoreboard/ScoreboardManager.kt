@@ -4,6 +4,7 @@ import cn.xor7.xiaohei.iceBoatTimer.rank.RecordTimeManager
 import cn.xor7.xiaohei.iceBoatTimer.utils.plus
 import fr.mrmicky.fastboard.adventure.FastBoard
 import net.kyori.adventure.text.Component
+import net.kyori.adventure.text.Component.text
 import net.kyori.adventure.text.TextComponent
 import net.kyori.adventure.text.format.NamedTextColor
 import net.kyori.adventure.text.format.TextDecoration
@@ -21,7 +22,8 @@ object ScoreboardManager : Listener {
         val player = e.getPlayer()
         this.boards[player.uniqueId] = FastBoard(player).apply {
             updateTitle(
-                Component.text("> 山商MC煤炭社第二届冰船比赛 <", NamedTextColor.GOLD).decorate(TextDecoration.BOLD))
+                text("> 山商MC煤炭社第二届冰船比赛 <", NamedTextColor.GOLD).decorate(TextDecoration.BOLD),
+            )
         }
     }
 
@@ -36,18 +38,23 @@ object ScoreboardManager : Listener {
     }
 
     private fun FastBoard.updateContent() {
-        val ranking = RecordTimeManager.rankingWindowByNth(player.name, 15)
-        for (i in 1..15) {
+        val windowSize = 15
+        val ranking = RecordTimeManager.rankingWindowByNth(player.name, windowSize)
+        val currentTimeSecs = RecordTimeManager.getCurrentStartedSecs(player.name)
+        for (i in 1..windowSize) {
             val entry = ranking.getOrNull(i - 1)
             if (entry != null) {
-                this.updateLine(i - 1, buildRankPart(i) + buildPlayerPart(entry.playerId) + buildTimeDiffPart(entry.timeDiffMs))
+                this.updateLine(
+                    i - 1,
+                    buildRankPart(i) + buildPlayerPart(entry.playerId) + buildTimeDiffPart(entry.timeDiffMs, currentTimeSecs),
+                )
             } else {
-                this.updateLine(i - 1, Component.text("".repeat(25)))
+                this.updateLine(i - 1, text("".repeat(25)))
             }
         }
     }
 
-    private fun buildRankPart(rank: Int) = Component.text(
+    private fun buildRankPart(rank: Int) = text(
         when (rank) {
             in 1..9 -> "$rank.  "
             else -> "$rank. "
@@ -55,19 +62,19 @@ object ScoreboardManager : Listener {
         NamedTextColor.GRAY,
     )
 
-    private fun buildPlayerPart(name: String) = Component.text(
-        name + " ".repeat(16 - name.length),
+    private fun buildPlayerPart(name: String) = text(
+        name + " ".repeat(20 - name.length),
         NamedTextColor.BLUE,
     )
 
-    private fun buildTimeDiffPart(timeDiffMs: Long): TextComponent {
-        if (timeDiffMs == 0L) return Component.text("0", NamedTextColor.GOLD)
+    private fun buildTimeDiffPart(timeDiffMs: Long, currentTimeSecs: Double): Component {
+        if (timeDiffMs == 0L) return text("%9.2f".format(currentTimeSecs), NamedTextColor.BLUE) + text("s", NamedTextColor.GRAY)
         else if (timeDiffMs > 0L) {
             val seconds = timeDiffMs.toDouble() / 1000.0
-            return Component.text("+%.3f".format(seconds), NamedTextColor.GREEN)
+            return text("%+8.2f".format(seconds), NamedTextColor.GREEN) + text("s", NamedTextColor.GRAY)
         } else {
             val seconds = -timeDiffMs.toDouble() / 1000.0
-            return Component.text("-%.3f".format(seconds), NamedTextColor.RED)
+            return text("%+8.2f".format(seconds), NamedTextColor.RED) + text("s", NamedTextColor.GRAY)
         }
     }
 }

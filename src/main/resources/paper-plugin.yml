@@ -6,4 +6,5 @@ dependencies:
   server:
     ParticleLib:
       load: BEFORE
+      required: true
       join-classpath: true

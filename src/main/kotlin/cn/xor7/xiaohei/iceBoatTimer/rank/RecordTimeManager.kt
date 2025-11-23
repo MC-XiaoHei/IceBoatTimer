@@ -25,22 +25,16 @@ object RecordTimeManager {
     fun setTimeIfAbsent(playerId: String, checkpoint: Int, timeMs: Long) {
         val record = records.computeIfAbsent(playerId) { PlayerRecord() }
         if (!record.checkpoints.containsKey(checkpoint)) {
-            record.checkpoints[checkpoint] = timeMs
+            record.checkpoints[checkpoint] = timeMs - record.startTimeMills
             save()
         }
     }
 
-    fun setTime(playerId: String, checkpoint: Int, timeMs: Long) {
-        val record = records.computeIfAbsent(playerId) { PlayerRecord() }
-        record.checkpoints[checkpoint] = timeMs
-        save()
+    fun getCurrentStartedSecs(playerId: String): Double {
+        val record = records[playerId] ?: return 0.0
+        val diff = System.currentTimeMillis() - record.startTimeMills
+        return diff / 1000.0
     }
-
-    fun getRecordTime(playerId: String, checkpoint: Int): Long? =
-        records[playerId]?.checkpoints?.get(checkpoint)
-
-    fun getAllRecordTimes(playerId: String): Map<Int, Long> =
-        records[playerId]?.checkpoints?.toMap() ?: emptyMap()
 
     fun clearPlayer(playerId: String) {
         records.remove(playerId)
@@ -63,14 +57,13 @@ object RecordTimeManager {
         if (!::dataFile.isInitialized) return
         if (!dataFile.exists()) return
         val text = dataFile.readText().ifBlank { return }
-        val loaded: Map<String, Map<Int, Long>> = try {
+        val loaded: MutableMap<String, PlayerRecord> = try {
             json.decodeFromString(text)
         } catch (e: Exception) {
-            emptyMap()
+            e.printStackTrace()
+            mutableMapOf()
         }
-        for ((k, v) in loaded) {
-            records[k] = PlayerRecord(checkpoints = v.toMutableMap())
-        }
+        records += loaded
     }
 
     fun rankingByNth(playerId: String): List<NthRankEntry> {

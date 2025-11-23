@@ -1,5 +1,6 @@
 package cn.xor7.xiaohei.iceBoatTimer.checkpoint
 
+import cn.xor7.xiaohei.iceBoatTimer.game.GameManager
 import cn.xor7.xiaohei.iceBoatTimer.rank.RecordTimeManager
 import org.bukkit.event.EventHandler
 import org.bukkit.event.Listener
@@ -11,7 +12,8 @@ object CheckpointListener : Listener {
         val player = event.player
         val location = event.to
         val checkpoint = CheckpointManager.findContaining(location) ?: return
+        RecordTimeManager.setTimeIfAbsent(player.name, checkpoint.num, System.currentTimeMillis())
 
-        RecordTimeManager.setTime(player.name, checkpoint.num, System.currentTimeMillis())
+        if (checkpoint.isFinal) GameManager.playerFinishMatch(player)
     }
 }
