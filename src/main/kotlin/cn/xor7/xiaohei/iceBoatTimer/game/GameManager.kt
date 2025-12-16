@@ -1,11 +1,13 @@
 package cn.xor7.xiaohei.iceBoatTimer.game
 
 import cn.xor7.xiaohei.iceBoatTimer.rank.RecordTimeManager
+import cn.xor7.xiaohei.iceBoatTimer.spawn.SpawnAreaManager
 import net.kyori.adventure.text.Component.text
 import net.kyori.adventure.text.format.NamedTextColor.GOLD
 import net.kyori.adventure.text.format.NamedTextColor.GREEN
 import net.kyori.adventure.title.TitlePart.SUBTITLE
 import net.kyori.adventure.title.TitlePart.TITLE
+import org.bukkit.GameMode
 import org.bukkit.Material
 import org.bukkit.entity.Boat
 import org.bukkit.entity.Player
@@ -34,14 +36,16 @@ object GameManager : Listener {
     fun onPlayerMove(event: PlayerMoveEvent) {
         val player = event.player
         if (startedPlayers.contains(player.name)) return
-        event.isCancelled = true
+        if (player.gameMode == GameMode.SPECTATOR) return
+        if (SpawnAreaManager.inSpawnArea(player.location)) return
+        player.teleport(SpawnAreaManager.getSpawnLocation())
     }
 
     @EventHandler
     fun onPlayerJoin(event: PlayerJoinEvent) {
         val player = event.player
         if (startedPlayers.contains(player.name)) return
-        player.teleport(player.respawnLocation ?: player.world.spawnLocation)
+        player.teleport(SpawnAreaManager.getSpawnLocation())
     }
 
     private fun getBoatItemFromEntity(boat: Boat): ItemStack {
@@ -65,5 +69,7 @@ object GameManager : Listener {
         val costTime = RecordTimeManager.getCurrentStartedSecs(player.name)
         val timeStr = "%.2f".format(costTime)
         player.sendTitlePart(SUBTITLE, text("用时 $timeStr 秒", GREEN))
+        startedPlayers.remove(player.name)
+        player.teleport(SpawnAreaManager.getSpawnLocation())
     }
 }

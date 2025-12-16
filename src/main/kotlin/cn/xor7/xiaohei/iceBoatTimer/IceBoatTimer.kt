@@ -8,6 +8,8 @@ import cn.xor7.xiaohei.iceBoatTimer.game.registerGameCommand
 import cn.xor7.xiaohei.iceBoatTimer.rank.RecordTimeManager
 import cn.xor7.xiaohei.iceBoatTimer.rank.registerRecordTimeCommand
 import cn.xor7.xiaohei.iceBoatTimer.scoreboard.ScoreboardManager
+import cn.xor7.xiaohei.iceBoatTimer.spawn.SpawnAreaManager
+import cn.xor7.xiaohei.iceBoatTimer.spawn.registerSpawnAreaCommand
 import cn.xor7.xiaohei.iceBoatTimer.utils.registerListener
 import cn.xor7.xiaohei.iceBoatTimer.utils.runTaskTimer
 import dev.jorel.commandapi.CommandAPI
@@ -24,10 +26,12 @@ class IceBoatTimer : JavaPlugin() {
 
     override fun onEnable() {
         CommandAPI.onEnable()
+        SpawnAreaManager.init(dataFolder)
         CheckpointManager.init(dataFolder)
         RecordTimeManager.init(dataFolder)
         registerCheckpointCommand()
         registerRecordTimeCommand()
+        registerSpawnAreaCommand()
         registerGameCommand()
         registerListener(CheckpointListener)
         registerListener(ScoreboardManager)

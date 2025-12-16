@@ -10,6 +10,7 @@ object CheckpointListener : Listener {
     @EventHandler
     fun onPlayerMove(event: PlayerMoveEvent) {
         val player = event.player
+        if (!GameManager.startedPlayers.contains(player.name)) return
         val location = event.to
         val checkpoint = CheckpointManager.findContaining(location) ?: return
         RecordTimeManager.setTimeIfAbsent(player.name, checkpoint.num, System.currentTimeMillis())
