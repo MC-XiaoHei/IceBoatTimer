@@ -12,7 +12,6 @@ private val playerSelections = mutableMapOf<UUID, Pair<Location?, Location?>>()
 fun registerCheckpointCommand() = commandTree("checkpoint") {
     withPermission("iceboattimer.checkpoint.manage")
     literalArgument("pos1") {
-        withAliases("p1")
         playerExecutor { player, _ ->
             val pair = playerSelections[player.uniqueId] ?: (null to null)
             playerSelections[player.uniqueId] = player.location to pair.second
@@ -28,7 +27,6 @@ fun registerCheckpointCommand() = commandTree("checkpoint") {
         }
     }
     literalArgument("pos2") {
-        withAliases("p2")
         playerExecutor { player, _ ->
             val pair = playerSelections[player.uniqueId] ?: (null to null)
             playerSelections[player.uniqueId] = pair.first to player.location

@@ -8,13 +8,11 @@ import dev.jorel.commandapi.kotlindsl.playerExecutor
 fun registerSpawnAreaCommand() = commandTree("spawn-area") {
     withPermission("iceboattimer.spawn-area.manage")
     literalArgument("pos1") {
-        withAliases("p1")
         playerExecutor { player, _ ->
             SpawnAreaManager.setP1(player.location)
         }
     }
     literalArgument("pos2") {
-        withAliases("p2")
         playerExecutor { player, _ ->
             SpawnAreaManager.setP2(player.location)
         }

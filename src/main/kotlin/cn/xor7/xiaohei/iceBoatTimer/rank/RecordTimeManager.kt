@@ -32,8 +32,18 @@ object RecordTimeManager {
 
     fun getCurrentStartedSecs(playerId: String): Double {
         val record = records[playerId] ?: return 0.0
-        val diff = System.currentTimeMillis() - record.startTimeMills
+        val diff = (record.stopTimeMills ?: System.currentTimeMillis()) - record.startTimeMills
         return diff / 1000.0
+    }
+
+    fun flagPlayerFinished(playerId: String): Long {
+        val currentMillis = System.currentTimeMillis()
+        val record = records.computeIfAbsent(playerId) { PlayerRecord() }
+        if (record.stopTimeMills == null) {
+            records[playerId] = record.copy(stopTimeMills =currentMillis)
+            save()
+        }
+        return currentMillis - record.startTimeMills
     }
 
     fun clearPlayer(playerId: String) {
@@ -111,7 +121,7 @@ object RecordTimeManager {
                 rank = index + 1,
                 playerId = pid,
                 timeMs = time,
-                timeDiffMs = time - targetPlayerTime
+                timeDiffMs = time - targetPlayerTime,
             )
         }
     }

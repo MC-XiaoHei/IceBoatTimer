@@ -66,6 +66,7 @@ object GameManager : Listener {
     fun playerFinishMatch(player: Player) {
         player.sendTitlePart(TITLE, text("恭喜你完成了比赛！", GOLD))
 
+        RecordTimeManager.flagPlayerFinished(player.name)
         val costTime = RecordTimeManager.getCurrentStartedSecs(player.name)
         val timeStr = "%.2f".format(costTime)
         player.sendTitlePart(SUBTITLE, text("用时 $timeStr 秒", GREEN))

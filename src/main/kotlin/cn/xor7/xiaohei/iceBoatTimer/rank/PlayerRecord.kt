@@ -6,4 +6,5 @@ import kotlinx.serialization.Serializable
 data class PlayerRecord(
     val checkpoints: MutableMap<Int, Long> = mutableMapOf(),
     val startTimeMills: Long = System.currentTimeMillis(),
+    val stopTimeMills: Long? = null,
 )
