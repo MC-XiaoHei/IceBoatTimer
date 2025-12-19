@@ -19,11 +19,13 @@ fun registerGameCommand() = commandTree("game") {
                 var countdown = 10
                 player.teleport(SpawnAreaManager.getSpawnLocation())
                 player.inventory.clear()
-                player.inventory.addItem(ItemStack(Material.OAK_BOAT))
                 runTaskTimer(0, 20) {
                     if (countdown > 0) {
                         player.sendTitlePart(TITLE, text("$countdown", BLUE))
                     } else if (countdown == 0) {
+                        player.inventory.clear()
+                        player.inventory.addItem(ItemStack(Material.OAK_BOAT))
+                        player.teleport(SpawnAreaManager.getSpawnLocation())
                         player.sendTitlePart(TITLE, text("开始！", BLUE))
                         GameManager.startedPlayers += player.name
                         RecordTimeManager.resetPlayerStartTime(player.name)

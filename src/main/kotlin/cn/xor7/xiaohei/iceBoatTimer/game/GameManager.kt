@@ -17,6 +17,8 @@ import org.bukkit.event.player.PlayerJoinEvent
 import org.bukkit.event.player.PlayerMoveEvent
 import org.bukkit.event.vehicle.VehicleExitEvent
 import org.bukkit.inventory.ItemStack
+import org.bukkit.potion.PotionEffect
+import org.bukkit.potion.PotionEffectType
 
 object GameManager : Listener {
     val startedPlayers = mutableSetOf<String>()
@@ -46,6 +48,17 @@ object GameManager : Listener {
         val player = event.player
         if (startedPlayers.contains(player.name)) return
         player.teleport(SpawnAreaManager.getSpawnLocation())
+        player.isInvulnerable = true
+        player.addPotionEffect(
+            PotionEffect(
+                PotionEffectType.SATURATION,
+                PotionEffect.INFINITE_DURATION,
+                0,
+                false,
+                false,
+                false,
+            ),
+        )
     }
 
     private fun getBoatItemFromEntity(boat: Boat): ItemStack {
@@ -72,5 +85,6 @@ object GameManager : Listener {
         player.sendTitlePart(SUBTITLE, text("用时 $timeStr 秒", GREEN))
         startedPlayers.remove(player.name)
         player.teleport(SpawnAreaManager.getSpawnLocation())
+        player.inventory.clear()
     }
 }

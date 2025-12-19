@@ -5,14 +5,13 @@ import cn.xor7.xiaohei.iceBoatTimer.utils.plus
 import fr.mrmicky.fastboard.adventure.FastBoard
 import net.kyori.adventure.text.Component
 import net.kyori.adventure.text.Component.text
-import net.kyori.adventure.text.TextComponent
 import net.kyori.adventure.text.format.NamedTextColor
 import net.kyori.adventure.text.format.TextDecoration
 import org.bukkit.event.EventHandler
 import org.bukkit.event.Listener
 import org.bukkit.event.player.PlayerJoinEvent
 import org.bukkit.event.player.PlayerQuitEvent
-import java.util.UUID
+import java.util.*
 
 object ScoreboardManager : Listener {
     private val boards: MutableMap<UUID, FastBoard> = mutableMapOf()
@@ -46,7 +45,10 @@ object ScoreboardManager : Listener {
             if (entry != null) {
                 this.updateLine(
                     i - 1,
-                    buildRankPart(i) + buildPlayerPart(entry.playerId) + buildTimeDiffPart(entry.timeDiffMs, currentTimeSecs),
+                    buildRankPart(entry.rank) + buildPlayerPart(entry.playerId) + buildTimeDiffPart(
+                        entry.timeDiffMs,
+                        currentTimeSecs,
+                    ),
                 )
             } else {
                 this.updateLine(i - 1, text("".repeat(25)))
@@ -68,13 +70,15 @@ object ScoreboardManager : Listener {
     )
 
     private fun buildTimeDiffPart(timeDiffMs: Long, currentTimeSecs: Double): Component {
-        if (timeDiffMs == 0L) return text("%9.2f".format(currentTimeSecs), NamedTextColor.BLUE) + text("s", NamedTextColor.GRAY)
-        else if (timeDiffMs > 0L) {
-            val seconds = timeDiffMs.toDouble() / 1000.0
-            return text("%+8.2f".format(seconds), NamedTextColor.GREEN) + text("s", NamedTextColor.GRAY)
-        } else {
-            val seconds = -timeDiffMs.toDouble() / 1000.0
-            return text("%+8.2f".format(seconds), NamedTextColor.RED) + text("s", NamedTextColor.GRAY)
-        }
+        if (timeDiffMs == 0L) return text("%9.2f".format(currentTimeSecs), NamedTextColor.BLUE) + text(
+            "s",
+            NamedTextColor.GRAY,
+        )
+        val seconds = timeDiffMs.toDouble() / 1000.0
+        val secsStr = "%+.2f".format(seconds)
+        val spaceNum = 7 - secsStr.length
+        val color = if (timeDiffMs < 0L) NamedTextColor.RED else NamedTextColor.GREEN
+        return text(" ".repeat(spaceNum) + secsStr, color) +
+                text("s", NamedTextColor.GRAY)
     }
 }
